@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamShield - Spam Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🛡️</span>
+                    <h1>SpamShield</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-section="analyzer">Analyzer</button>
+                    <button class="nav-btn" data-section="scraper">Scraper</button>
+                    <button class="nav-btn" data-section="articles">Articles</button>
+                    <button class="nav-btn" data-section="analytics">Analytics</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Analyzer Section -->
+            <section id="analyzer" class="section active">
+                <div class="section-header">
+                    <h2>Article Analyzer</h2>
+                    <p>Paste your article content and we'll analyze it for spam indicators</p>
+                </div>
+
+                <form id="analyzeForm" class="form-group">
+                    <div class="input-group">
+                        <label for="title">Article Title *</label>
+                        <input type="text" id="title" placeholder="Enter article title" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="content">Article Content *</label>
+                        <textarea id="content" placeholder="Paste your article content here" rows="6" required></textarea>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="source">Source</label>
+                            <input type="text" id="source" placeholder="e.g., BBC News">
+                        </div>
+                        <div class="input-group">
+                            <label for="url">Article URL</label>
+                            <input type="url" id="url" placeholder="https://example.com">
+                        </div>
+                        <div class="input-group">
+                            <label for="category">Category</label>
+                            <select id="category">
+                                <option value="General">General</option>
+                                <option value="Tech">Tech</option>
+                                <option value="Science">Science</option>
+                                <option value="Politics">Politics</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Business">Business</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Analyze Article</button>
+                </form>
+
+                <!-- Results -->
+                <div id="analysisResults" class="results-container" style="display: none;">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <h3>Analysis Results</h3>
+                            <button class="close-btn" id="closeResults">×</button>
+                        </div>
+
+                        <div class="result-body">
+                            <!-- Spam Score -->
+                            <div class="score-section">
+                                <div class="score-box">
+                                    <div class="score-label">Spam Score</div>
+                                    <div class="score-value" id="spamScore">0</div>
+                                    <div class="score-max">/100</div>
+                                </div>
+                                <div class="score-meter">
+                                    <div class="meter-fill" id="meterFill"></div>
+                                </div>
+                            </div>
+
+                            <!-- Classification -->
+                            <div class="classification">
+                                <div class="class-item">
+                                    <span class="class-label">Classification:</span>
+                                    <span class="class-value" id="spamLevel">-</span>
+                                </div>
+                                <div class="class-item">
+                                    <span class="class-label">Credibility:</span>
+                                    <span class="class-value" id="credibility">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Details -->
+                            <div class="details-section">
+                                <h4>Detection Details:</h4>
+                                <div id="detailsList" class="details-list"></div>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div class="recommendations">
+                                <h4>Recommendations:</h4>
+                                <ul id="recommendationsList"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scraper Section -->
+            <section id="scraper" class="section">
+                <div class="section-header">
+                    <h2>News Scraper</h2>
+                    <p>Automatically scrape and analyze articles from major news sources</p>
+                </div>
+
+                <div class="scraper-controls">
+                    <button id="scrapeBtn" class="btn btn-primary">Start Scraping</button>
+                    <div class="status-indicator" id="status"></div>
+                </div>
+
+                <div id="scrapeResults" class="scrape-results" style="display: none;">
+                    <h3>Scraped Articles</h3>
+                    <div id="scrapeList" class="articles-list"></div>
+                </div>
+            </section>
+
+            <!-- Articles Section -->
+            <section id="articles" class="section">
+                <div class="section-header">
+                    <h2>All Articles</h2>
+                    <p>Browse all analyzed articles</p>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search articles...">
+                    <button id="searchBtn" class="btn btn-secondary">Search</button>
+                </div>
+
+                <div id="articlesList" class="articles-list"></div>
+                <div class="pagination" id="pagination"></div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="section">
+                <div class="section-header">
+                    <h2>Analytics Dashboard</h2>
+                    <p>Statistics and insights from analyzed articles</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalAnalyzed">0</div>
+                            <div class="stat-label">Total Analyzed</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="legitCount">0</div>
+                            <div class="stat-label">Legitimate</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="suspiciousCount">0</div>
+                            <div class="stat-label">Suspicious</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="spamCount">0</div>
+                            <div class="stat-label">Spam Detected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Spam Distribution</h3>
+                    <div class="pie-chart">
+                        <div class="pie" id="pieChart"></div>
+                        <div class="pie-legend" id="pieLegend"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Classification Breakdown</h3>
+                    <div class="bar-chart" id="barChart"></div>
+                </div>
+
+                <div class="export-section">
+                    <button id="exportBtn" class="btn btn-secondary">Export Data</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 SpamShield. Protecting you from spam articles.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
